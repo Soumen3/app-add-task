@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,7 +42,6 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
 
     'core',
     'djoser',
@@ -140,21 +140,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
+
+CORS_ALLOW_ALL_ORIGINS = False  # Block all except allowed origins
 CORS_ALLOWED_ORIGINS = [
-    "https://example.com",
-    "https://sub.example.com",
-    "http://localhost:8080",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:8000",
-    "http://localhost:5173",  # React Frontend
-    "http://127.0.0.1:5173",
+    "http://localhost:5173",  # Allow your React frontend
 ]
+
+CORS_ALLOW_CREDENTIALS = True  # ✅ Allow credentials (cookies, tokens)
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]  # ✅ Trust React frontend
 
 from datetime import timedelta
 

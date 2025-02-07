@@ -8,16 +8,14 @@ const Login = () => {
     const navigate = useNavigate();
     const [isMounted, setIsMounted] = useState(false);
 
-    useEffect(() => {
-        if (!isMounted) {
-            const accessToken = localStorage.getItem("access_token");
-            if (accessToken) {
-                alert("You are already logged in!");
-                navigate("/dashboard");
-            }
-            setIsMounted(true);
-        }
-    }, [isMounted, navigate]);
+    // useEffect(() => {
+    //     const accessToken = localStorage.getItem("access_token");
+    //     if (accessToken) {
+    //         alert("You are already logged in!");
+    //         navigate("/dashboard");
+    //     }
+    //     setIsMounted(true);
+    //     },[navigate]);
 
     const handleChange = (e) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -26,16 +24,21 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            console.log(credentials);
+            
             const response = await loginUser(credentials);
             console.log(response);
             
-            localStorage.setItem("access_token", response.data.access);
-            localStorage.setItem("refresh_token", response.data.refresh);
+            localStorage.setItem("access_token", response.data.token.access);
+            localStorage.setItem("refresh_token", response.data.token.refresh);
             console.log("login successful");
-            
-            navigate("/dashboard");
+            if (response.data.is_admin) {
+                navigate("/admin");
+            } else {
+                navigate("/dashboard");
+            }
         } catch (error) {
-            alert("Login failed!");
+            alert("Login failed. Please try again.");
         }
     };
 
