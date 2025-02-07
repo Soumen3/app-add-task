@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchAllApps, getUserData, refreshToken } from "../utils/api";
 
 const AdminPanel = () => {
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
     const [apps, setApps] = useState([]);
     const [formData, setFormData] = useState({
         name: "",
@@ -13,25 +17,42 @@ const AdminPanel = () => {
     });
 
     useEffect(() => {
-        checkAdmin();
-        fetchApps();
-    }, []);
+        const token = localStorage.getItem("access_token");
+        const refresh = localStorage.getItem("refresh_token");
 
-    const checkAdmin = async () => {
-        try {
-            const response = await axios.get("http://127.0.0.1:8000/api/profile/", { withCredentials: true });
-            if (!response.data.is_admin) {
-                navigate("/login");
-            }
-        } catch (error) {
-            console.error("Error checking admin status:", error);
+        if (!token || !refresh) {
             navigate("/login");
+        } else {
+            getUserData(token)
+                .then(response => {
+                    setUser(response.data);
+                    if (!response.data.is_admin) {
+                        navigate("/dashboard");
+                    }
+                })
+                .catch(async (error) => {
+                    if (error.response && error.response.status === 401) {
+                        try {
+                            const response = await refreshToken(refresh);
+                            localStorage.setItem("access_token", response.data.access);
+                            getUserData(response.data.access)
+                                .then(response => setUser(response.data))
+                                .catch(() => navigate("/login"));
+                        } catch (refreshError) {
+                            navigate("/login");
+                        }
+                    } else {
+                        navigate("/login");
+                    }
+                });
         }
-    };
+
+        fetchApps();
+    }, [navigate]);
 
     const fetchApps = async () => {
         try {
-            const response = await axios.get("http://127.0.0.1:8000/admin/apps/", { withCredentials: true });
+            const response = await fetchAllApps();
             setApps(response.data.apps);
         } catch (error) {
             console.error("Error fetching apps:", error);
@@ -45,8 +66,13 @@ const AdminPanel = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://127.0.0.1:8000/admin/apps/create/", formData, { withCredentials: true });
+            const token = localStorage.getItem("access_token");
+            await axios.post("http://127.0.0.1:8000/api/admin/apps/create/", formData, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true
+            });
             fetchApps();
+            e.target.reset();
         } catch (error) {
             console.error("Error adding app:", error);
         }
@@ -54,16 +80,29 @@ const AdminPanel = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://127.0.0.1:8000/admin/apps/delete/${id}/`, { withCredentials: true });
+            const token = localStorage.getItem("access_token");
+            await axios.delete(`http://127.0.0.1:8000/api/admin/apps/delete/${id}/`, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true
+            });
             fetchApps();
         } catch (error) {
             console.error("Error deleting app:", error);
         }
     };
 
+    const logout = () => {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        navigate("/login");
+    };
+
     return (
         <div className="container mx-auto p-8">
             <h1 className="text-3xl font-bold mb-4">Admin Panel - Manage Apps</h1>
+            <h2 className="text-xl font-semibold mb-4">Welcome, {user && user.username}</h2>
+            <button onClick={logout} className="w-fit mt-4 p-4 bg-red-500 text-white py-2 rounded hover:bg-red-600">Logout</button>
+
             <form onSubmit={handleSubmit} className="mb-4 p-4 bg-white shadow rounded flex flex-wrap gap-2">
                 <input type="text" name="name" placeholder="App Name" className="border p-2 flex-1" onChange={handleChange} required />
                 <input type="url" name="link" placeholder="App Link" className="border p-2 flex-1" onChange={handleChange} required />

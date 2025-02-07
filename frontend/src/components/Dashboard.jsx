@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { getUserData, refreshToken } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import React from "react";
@@ -15,7 +15,13 @@ const Dashboard = () => {
             navigate("/login");
         } else {
             getUserData(token)
-                .then(response => setUser(response.data))
+                .then(response => {
+                    setUser(response.data);
+                    // if (response.data.is_admin) {
+                    //     navigate("/admin");
+                    // }
+                    
+                })
                 .catch(async (error) => {
                     if (error.response && error.response.status === 401) {
                         try {
@@ -32,7 +38,8 @@ const Dashboard = () => {
                     }
                 });
         }
-    }, [navigate]);
+        
+    }, []);
 
     const logout = () => {
         localStorage.removeItem("access_token");

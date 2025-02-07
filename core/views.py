@@ -5,12 +5,38 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import App, Task
 from .serializers import AppSerializer, TaskSerializer
-from .serializers import UserRegisterSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer
 from rest_framework.permissions import AllowAny
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from rest_framework.views import APIView
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
+class UserLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, format=None):
+        serializer = UserLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            token = get_tokens_for_user(user)
+            return Response({'msg': 'User login successful', 'token': token, 'is_admin':user.is_staff}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': {'non_field_errors': ['Username or Password is not valid']}}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 # List all apps or create a new one
@@ -71,20 +97,21 @@ def register_user(request):
 
 
 # ✅ Get all apps (For Admin Dashboard)
-@login_required
+# @login_required
+@permission_classes([IsAuthenticated])
 def get_apps(request):
     apps = list(App.objects.values())
     return JsonResponse({"apps": apps})
 
 # ✅ Create a new app
 @csrf_exempt
-@login_required
+@permission_classes([IsAuthenticated])
 def create_app(request):
     if request.method == "POST":
         data = json.loads(request.body)
         app = App.objects.create(
             name=data["name"],
-            link=data["link"],
+            app_link=data["link"],
             category=data["category"],
             sub_category=data["sub_category"],
             points=data["points"]
