@@ -138,12 +138,12 @@ def update_app(request, app_id):
 
 # ✅ Delete an app
 @csrf_exempt
-@login_required
+@permission_classes([IsAuthenticated])
 def delete_app(request, app_id):
     if request.method == "DELETE":
         try:
             app = App.objects.get(id=app_id)
             app.delete()
-            return JsonResponse({"message": "App deleted successfully!"})
+            return JsonResponse({"message": "App deleted successfully!"}, status=204)
         except App.DoesNotExist:
             return JsonResponse({"error": "App not found"}, status=404)
