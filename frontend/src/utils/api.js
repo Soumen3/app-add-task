@@ -28,3 +28,34 @@ export const fetchAllApps = async () => {
         withCredentials: true
     });
 };
+
+export const fetchAllTasks = async (token, user) => {
+    return axios.get(`${API_BASE_URL}/tasks/${user.username}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
+    });
+};
+
+export const fetchUndoneTasks = async (token, user) => {
+    return axios.get(`${API_BASE_URL}/tasks/undone/${user.username}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
+    });
+};
+
+export const getCSRFToken = async () => {
+    const response = await axios.get(`${API_BASE_URL}/csrf/`, { withCredentials: true });
+    return response.data.csrfToken;
+};
+
+export const uploadTask = async (token, app_id, formData) => {
+    const csrfToken = await getCSRFToken();
+    return axios.post(`${API_BASE_URL}/tasks/upload/${app_id}/`, formData, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+            'X-CSRFToken': csrfToken
+        },
+        withCredentials: true
+    });
+};
