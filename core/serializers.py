@@ -8,10 +8,11 @@ class AppSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TaskSerializer(serializers.ModelSerializer):
+    app = AppSerializer()
+
     class Meta:
         model = Task
         fields = '__all__'
-
 
 # Serializer for User Registration
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -30,8 +31,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
-
-
 
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField()

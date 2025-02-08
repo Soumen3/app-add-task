@@ -1,12 +1,11 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 from .models import App, Task
 from .serializers import AppSerializer, TaskSerializer
 from .serializers import UserRegisterSerializer, UserLoginSerializer
-from rest_framework.permissions import AllowAny
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -14,6 +13,8 @@ import json
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from django.middleware.csrf import get_token
 
 
 def get_tokens_for_user(user):
@@ -56,14 +57,16 @@ def app_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Upload task screenshot
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def upload_task(request):
-    serializer = TaskSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save(user=request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def upload_task(request, app_id):
+    user = request.user
+    screenshot = request.FILES.get('screenshot')
+    app = get_object_or_404(App, id=app_id)
+    task = Task.objects.create(user=user, app=app, screenshot=screenshot)
+    serializer = TaskSerializer(task)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 # Get user profile with tasks and points
 @api_view(['GET'])
@@ -71,11 +74,13 @@ def upload_task(request):
 def profile(request):
     user = request.user
     tasks = Task.objects.filter(user=user)
-    total_points = sum([task.app.points for task in tasks if task.is_approved])
+    total_points = sum([task.app.points for task in tasks])
     serializer = TaskSerializer(tasks, many=True)
     return Response({
         "username": user.username,
         "email": user.email,
+        'first_name':user.first_name,
+        'last_name':user.last_name,
         "total_points": total_points,
         "tasks_completed": serializer.data,
         "is_admin": user.is_staff
@@ -147,3 +152,28 @@ def delete_app(request, app_id):
             return JsonResponse({"message": "App deleted successfully!"}, status=204)
         except App.DoesNotExist:
             return JsonResponse({"error": "App not found"}, status=404)
+
+
+@permission_classes([IsAuthenticated])
+def get_user_tasks(request, user):
+    user = get_object_or_404(User, username=user)
+    tasks = Task.objects.filter(user=user)
+    serializer = TaskSerializer(tasks, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_undone_tasks(request, user):
+    user = get_object_or_404(User, username=user)
+    user_task_ids = Task.objects.filter(user=user).values_list('app_id', flat=True)
+    undone_tasks = App.objects.exclude(id__in=user_task_ids)
+    serializer = AppSerializer(undone_tasks, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_csrf_token(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrfToken': csrf_token})

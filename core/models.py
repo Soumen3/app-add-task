@@ -15,7 +15,6 @@ class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     app = models.ForeignKey(App, on_delete=models.CASCADE)
     screenshot = models.ImageField(upload_to="screenshots/")
-    is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.app.name}"
