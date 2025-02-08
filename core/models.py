@@ -3,10 +3,11 @@ from django.contrib.auth.models import User
 
 class App(models.Model):
     name = models.CharField(max_length=100)
-    app_link = models.URLField(max_length=300,default="/")  # App link field
+    app_link = models.URLField(max_length=300, default="/")
     category = models.CharField(max_length=100)
-    sub_category = models.CharField(max_length=100, null= True, blank=True)  # New sub-category field
+    sub_category = models.CharField(max_length=100, null=True, blank=True)
     points = models.IntegerField(default=0)
+    logo = models.ImageField(upload_to="logos/", null=True, blank=True)  # New field for app logo
 
     def __str__(self):
         return self.name

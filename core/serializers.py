@@ -3,6 +3,8 @@ from .models import App, Task
 from django.contrib.auth.models import User
 
 class AppSerializer(serializers.ModelSerializer):
+    logo = serializers.ImageField(use_url=True)
+
     class Meta:
         model = App
         fields = '__all__'

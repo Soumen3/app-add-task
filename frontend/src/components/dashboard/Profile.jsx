@@ -54,10 +54,15 @@ const Profile = () => {
                 <h3 className="text-xl font-bold mb-2">Tasks Completed</h3>
                 <ul className="list-disc list-inside">
                     {user.tasks_completed.map((task, index) => (
-                        <li key={index} className="mb-4">
-                            <p><strong>App Name:</strong> {task.app.name}</p>
-                            <p><strong>Points:</strong> {task.app.points}</p>
-                            <img src={`http://127.0.0.1:8000${task.screenshot}`} alt="Screenshot" className="w-32 h-32 object-cover mt-2" />
+                        <li key={index} className="mb-4 flex justify-between items-center">
+                            <div className="flex items-center">
+                                {task.app.logo && <img src={`http://127.0.0.1:8000${task.app.logo}`} alt="App Logo" className="w-12 h-12 object-cover mr-4" />}
+                                <div>
+                                    <p><strong>App Name:</strong> {task.app.name}</p>
+                                    <p><strong>Points:</strong> {task.app.points}</p>
+                                </div>
+                            </div>
+                            <img src={`http://127.0.0.1:8000${task.screenshot}`} alt="Screenshot" className="w-32 h-32 object-cover" />
                         </li>
                     ))}
                 </ul>

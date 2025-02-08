@@ -59,3 +59,15 @@ export const uploadTask = async (token, app_id, formData) => {
         withCredentials: true
     });
 };
+
+export const createApp = async (token, formData) => {
+    const csrfToken = await getCSRFToken();
+    return axios.post(`${API_BASE_URL}/admin/apps/create/`, formData, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+            'X-CSRFToken': csrfToken
+        },
+        withCredentials: true
+    });
+};

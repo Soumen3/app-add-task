@@ -105,7 +105,7 @@ def register_user(request):
 # @login_required
 @permission_classes([IsAuthenticated])
 def get_apps(request):
-    apps = list(App.objects.values())
+    apps = AppSerializer(App.objects.all(), many=True).data
     return JsonResponse({"apps": apps})
 
 # ✅ Create a new app
@@ -113,13 +113,15 @@ def get_apps(request):
 @permission_classes([IsAuthenticated])
 def create_app(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        data = request.POST
+        logo = request.FILES.get('logo')
         app = App.objects.create(
             name=data["name"],
             app_link=data["link"],
             category=data["category"],
             sub_category=data["sub_category"],
-            points=data["points"]
+            points=data["points"],
+            logo=logo
         )
         return JsonResponse({"message": "App added successfully!", "app_id": app.id})
 
