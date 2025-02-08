@@ -2,19 +2,18 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchAllApps, getUserData, refreshToken } from "../utils/api";
+import { fetchAllApps, getUserData, refreshToken, createApp } from "../utils/api";
 
 const AdminPanel = () => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const [apps, setApps] = useState([]);
-    const [formData, setFormData] = useState({
-        name: "",
-        link: "",
-        category: "",
-        sub_category: "",
-        points: 0,
-    });
+    const [name, setName] = useState("");
+    const [link, setLink] = useState("");
+    const [category, setCategory] = useState("");
+    const [subCategory, setSubCategory] = useState("");
+    const [points, setPoints] = useState(0);
+    const [logo, setLogo] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
@@ -54,27 +53,35 @@ const AdminPanel = () => {
         try {
             const response = await fetchAllApps();
             setApps(response.data.apps);
+            console.log(response.data.apps);
+            
         } catch (error) {
             console.error("Error fetching apps:", error);
         }
     };
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleFileChange = (e) => {
+        setLogo(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem("access_token");
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("link", link);
+        formData.append("category", category);
+        formData.append("sub_category", subCategory);
+        formData.append("points", points);
+        formData.append("logo", logo);
+
         try {
-            const token = localStorage.getItem("access_token");
-            await axios.post("http://127.0.0.1:8000/api/admin/apps/create/", formData, {
-                headers: { Authorization: `Bearer ${token}` },
-                withCredentials: true
-            });
+            const response = await createApp(token, formData);
+            console.log("App created:", response.data);
             fetchApps();
             e.target.reset();
         } catch (error) {
-            console.error("Error adding app:", error);
+            console.error("Error creating app:", error);
         }
     };
 
@@ -104,18 +111,22 @@ const AdminPanel = () => {
             <button onClick={logout} className="w-fit mt-4 p-4 bg-red-500 text-white py-2 rounded hover:bg-red-600">Logout</button>
 
             <form onSubmit={handleSubmit} className="mb-4 p-4 bg-white shadow rounded flex flex-wrap gap-2">
-                <input type="text" name="name" placeholder="App Name" className="border p-2 flex-1" onChange={handleChange} required />
-                <input type="url" name="link" placeholder="App Link" className="border p-2 flex-1" onChange={handleChange} required />
-                <input type="text" name="category" placeholder="Category" className="border p-2 flex-1" onChange={handleChange} required />
-                <input type="text" name="sub_category" placeholder="Sub-category" className="border p-2 flex-1" onChange={handleChange} required />
-                <input type="number" name="points" placeholder="Points" className="border p-2 w-24" onChange={handleChange} required />
+                <input type="text" name="name" placeholder="App Name" className="border p-2 flex-1" onChange={(e) => setName(e.target.value)} required />
+                <input type="url" name="link" placeholder="App Link" className="border p-2 flex-1" onChange={(e) => setLink(e.target.value)} required />
+                <input type="text" name="category" placeholder="Category" className="border p-2 flex-1" onChange={(e) => setCategory(e.target.value)} required />
+                <input type="text" name="sub_category" placeholder="Sub-category" className="border p-2 flex-1" onChange={(e) => setSubCategory(e.target.value)} required />
+                <input type="number" name="points" placeholder="Points" className="border p-2 w-24" onChange={(e) => setPoints(e.target.value)} required />
+                <input type="file" name="logo" className="border p-2 w-full" onChange={handleFileChange} required />
                 <button type="submit" className="bg-blue-500 text-white p-2 rounded">Add App</button>
             </form>
 
             <ul className="bg-gray-100 p-4 rounded">
                 {apps.map((app) => (
-                    <li key={app.id} className="flex justify-between p-2 bg-white shadow mb-2 rounded">
-                        <span>{app.name} - {app.points} Points</span>
+                    <li key={app.id} className="flex justify-between items-center p-2 bg-white shadow mb-2 rounded">
+                        <div className="flex items-center">
+                            {app.logo && <img src={`http://127.0.0.1:8000${app.logo}`} alt="App Logo" className="w-12 h-12 object-cover mr-4" />}
+                            <span>{app.name} - {app.points} Points</span>
+                        </div>
                         <button onClick={() => handleDelete(app.id)} className="bg-red-500 text-white p-1 rounded">Delete</button>
                     </li>
                 ))}

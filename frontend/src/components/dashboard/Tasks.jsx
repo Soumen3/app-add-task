@@ -62,9 +62,12 @@ const Tasks = ({ onEarnClick }) => {
                 <ul className="space-y-4">
                     {tasks.map((task, index) => (
                         <li key={index} className="border p-4 rounded shadow flex justify-between items-center">
-                            <div>
-                                <p className="font-bold">{task.name}</p>
-                                <p>{task.points} Points</p>
+                            <div className="flex items-center">
+                                {task.logo && <img src={`http://127.0.0.1:8000${task.logo}`} alt="App Logo" className="w-12 h-12 object-cover mr-4" />}
+                                <div>
+                                    <p className="font-bold">{task.name}</p>
+                                    <p>{task.points} Points</p>
+                                </div>
                             </div>
                             <button
                                 className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
