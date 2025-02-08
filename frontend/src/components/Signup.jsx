@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { registerUser } from "../utils/api";
+import { registerUser, getUserData } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 
@@ -12,8 +12,17 @@ const Signup = () => {
         if (!isMounted) {
             const accessToken = localStorage.getItem("access_token");
             if (accessToken) {
-                alert("You are already logged in!");
-                navigate("/dashboard");
+                getUserData(accessToken)
+                    .then(response => {
+                        if (response.data.is_admin) {
+                            navigate("/admin");
+                        } else {
+                            navigate("/dashboard");
+                        }
+                    })
+                    .catch(() => {
+                        // Handle error if needed
+                    });
             }
             setIsMounted(true);
         }
@@ -26,12 +35,15 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await registerUser(formData);
-            alert("Signup successful!");
-            navigate("/login");
+            const user = await registerUser(formData);
+            if (user.status === 201) {
+                alert("Signup successful!");
+                navigate("/login");
+            } else {
+                alert("Signup failed!");
+            }
         } catch (error) {
             console.log(error);
-            
             alert("Signup failed!");
         }
     };
