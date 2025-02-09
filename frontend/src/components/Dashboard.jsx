@@ -7,6 +7,7 @@ import Points from "./dashboard/Points";
 import Tasks from "./dashboard/Tasks";
 import Profile from "./dashboard/Profile";
 import CompleteTask from "./dashboard/CompleteTask";
+import { CurrencyDollarIcon, HomeIcon, ClipboardDocumentListIcon, UserIcon } from '@heroicons/react/24/solid'
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
@@ -72,15 +73,31 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="flex h-screen">
-            <div className="w-1/4 bg-gray-200 p-4 flex flex-col">
-                <button className="w-full mb-2 p-2 bg-blue-500 text-white rounded" onClick={() => setActiveWindow("home")}>Home</button>
-                <button className="w-full mb-2 p-2 bg-blue-500 text-white rounded" onClick={() => setActiveWindow("points")}>Points</button>
-                <button className="w-full mb-2 p-2 bg-blue-500 text-white rounded" onClick={() => setActiveWindow("tasks")}>Tasks</button>
-                <button className="w-full mb-2 p-2 bg-blue-500 text-white rounded" onClick={() => setActiveWindow("profile")}>Profile</button>
-                <button className="w-full mb-2 p-2 bg-red-500 text-white rounded" onClick={logout}>Logout</button>
+        <div className="flex min-h-screen bg-gray-900 text-white">
+            <div className="w-1/7 bg-gray-800 p-4 flex flex-col items-center">
+                <div className="flex flex-col items-center fixed">
+                    <button className="w-20 mb-2 p-2 bg-blue-500 text-white rounded flex items-center justify-center" onClick={() => setActiveWindow("home")}>
+                        <HomeIcon className="w-5 h-5 mr-2" />
+                        Home
+                    </button>
+                    <button className="w-20 mb-2 p-2 bg-blue-500 text-white rounded flex items-center justify-center" onClick={() => setActiveWindow("points")}>
+                        <CurrencyDollarIcon className="w-5 h-5 mr-2" />
+                        Points
+                    </button>
+                    <button className="w-20 mb-2 p-2 bg-blue-500 text-white rounded flex items-center justify-center" onClick={() => setActiveWindow("tasks")}>
+                        <ClipboardDocumentListIcon className="w-5 h-5 mr-2" />
+                        Tasks
+                    </button>
+                    <button className="w-20 mb-2 p-2 bg-blue-500 text-white rounded flex items-center justify-center" onClick={() => setActiveWindow("profile")}>
+                        <UserIcon className="w-5 h-5 mr-2" />
+                        Profile
+                    </button>
+                    <button className="w-20 mb-2 p-2 bg-red-500 text-white rounded flex items-center justify-center" onClick={logout}>
+                        Logout
+                    </button>
+                </div>
             </div>
-            <div className="w-3/4 p-4">
+            <div className="w-6/7 p-4">
                 {renderContent()}
             </div>
         </div>
