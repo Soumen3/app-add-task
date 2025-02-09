@@ -53,8 +53,6 @@ const AdminPanel = () => {
         try {
             const response = await fetchAllApps();
             setApps(response.data.apps);
-            console.log(response.data.apps);
-            
         } catch (error) {
             console.error("Error fetching apps:", error);
         }
@@ -105,24 +103,28 @@ const AdminPanel = () => {
     };
 
     return (
-        <div className="container mx-auto p-8">
-            <h1 className="text-3xl font-bold mb-4">Admin Panel - Manage Apps</h1>
-            <h2 className="text-xl font-semibold mb-4">Welcome, {user && user.username}</h2>
-            <button onClick={logout} className="w-fit mt-4 p-4 bg-red-500 text-white py-2 rounded hover:bg-red-600">Logout</button>
+        <div className="bg-gray-700 mx-auto p-8 text-white">
+            <div className="flex justify-between items-center mb-4">
+                <div className="w-1/2">
+                    <h1 className="text-3xl font-bold mb-4">Admin Panel - Manage Apps</h1>
+                    <h2 className="text-xl font-semibold mb-4">Welcome, {user && user.username}</h2>
+                </div>
+                <button onClick={logout} className="w-fit mt-4 p-4 bg-red-500 text-white py-2 rounded hover:bg-red-600">Logout</button>
+            </div>
 
-            <form onSubmit={handleSubmit} className="mb-4 p-4 bg-white shadow rounded flex flex-wrap gap-2">
-                <input type="text" name="name" placeholder="App Name" className="border p-2 flex-1" onChange={(e) => setName(e.target.value)} required />
-                <input type="url" name="link" placeholder="App Link" className="border p-2 flex-1" onChange={(e) => setLink(e.target.value)} required />
-                <input type="text" name="category" placeholder="Category" className="border p-2 flex-1" onChange={(e) => setCategory(e.target.value)} required />
-                <input type="text" name="sub_category" placeholder="Sub-category" className="border p-2 flex-1" onChange={(e) => setSubCategory(e.target.value)} required />
-                <input type="number" name="points" placeholder="Points" className="border p-2 w-24" onChange={(e) => setPoints(e.target.value)} required />
-                <input type="file" name="logo" className="border p-2 w-full" onChange={handleFileChange} required />
+            <form onSubmit={handleSubmit} className="mb-4 p-4 bg-gray-800 shadow rounded flex flex-wrap gap-2">
+                <input type="text" name="name" placeholder="App Name" className="border rounded-lg p-2 flex-1 bg-gray-700 text-white" onChange={(e) => setName(e.target.value)} required />
+                <input type="url" name="link" placeholder="App Link" className="border rounded-lg p-2 flex-1 bg-gray-700 text-white" onChange={(e) => setLink(e.target.value)} required />
+                <input type="text" name="category" placeholder="Category" className="border rounded-lg p-2 flex-1 bg-gray-700 text-white" onChange={(e) => setCategory(e.target.value)} required />
+                <input type="text" name="sub_category" placeholder="Sub-category" className="border rounded-lg p-2 flex-1 bg-gray-700 text-white" onChange={(e) => setSubCategory(e.target.value)} required />
+                <input type="number" name="points" placeholder="Points" className="border rounded-lg p-2 w-24 bg-gray-700 text-white" onChange={(e) => setPoints(e.target.value)} required />
+                <input type="file" name="logo" className="border rounded-lg p-2 w-full bg-gray-700 text-white" onChange={handleFileChange} />
                 <button type="submit" className="bg-blue-500 text-white p-2 rounded">Add App</button>
             </form>
 
-            <ul className="bg-gray-100 p-4 rounded">
+            <ul className="bg-gray-800 p-4 rounded">
                 {apps.map((app) => (
-                    <li key={app.id} className="flex justify-between items-center p-2 bg-white shadow mb-2 rounded">
+                    <li key={app.id} className="flex justify-between items-center p-2 bg-gray-700 shadow mb-2 rounded">
                         <div className="flex items-center">
                             {app.logo && <img src={`http://127.0.0.1:8000${app.logo}`} alt="App Logo" className="w-12 h-12 object-cover mr-4" />}
                             <span>{app.name} - {app.points} Points</span>

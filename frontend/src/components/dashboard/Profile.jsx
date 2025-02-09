@@ -41,16 +41,16 @@ const Profile = () => {
     }
 
     return (
-        <div className="p-4">
+        <div className="p-4 bg-gray-900 text-white">
             <h2 className="text-2xl font-bold mb-4">Profile</h2>
-            <div className="bg-white p-4 rounded shadow-md mb-4">
+            <div className="bg-gray-800 p-4 rounded shadow-md mb-4">
                 <p><strong>Username:</strong> {user.username}</p>
                 <p><strong>Email:</strong> {user.email}</p>
                 <p><strong>First Name:</strong> {user.first_name}</p>
                 <p><strong>Last Name:</strong> {user.last_name}</p>
                 <p><strong>Total Points:</strong> {user.total_points}</p>
             </div>
-            <div className="bg-white p-4 rounded shadow-md">
+            <div className="bg-gray-800 p-4 rounded shadow-md">
                 <h3 className="text-xl font-bold mb-2">Tasks Completed</h3>
                 <ul className="list-disc list-inside">
                     {user.tasks_completed.map((task, index) => (

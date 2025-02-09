@@ -49,18 +49,18 @@ const Signup = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
+            <div className="bg-gray-800 p-8 rounded-lg shadow-md w-96">
                 <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <input type="text" name="username" placeholder="Username" className="w-full p-2 border rounded" onChange={handleChange} required />
-                    <input type="text" name="first_name" placeholder="First Name" className="w-full p-2 border rounded" onChange={handleChange} required />
-                    <input type="text" name="last_name" placeholder="Last Name" className="w-full p-2 border rounded" onChange={handleChange} required />
-                    <input type="email" name="email" placeholder="Email" className="w-full p-2 border rounded" onChange={handleChange} required />
-                    <input type="password" name="password" placeholder="Password" className="w-full p-2 border rounded" onChange={handleChange} required />
+                    <input type="text" name="username" placeholder="Username" className="w-full p-2 border rounded bg-gray-700 text-white" onChange={handleChange} required />
+                    <input type="text" name="first_name" placeholder="First Name" className="w-full p-2 border rounded bg-gray-700 text-white" onChange={handleChange} required />
+                    <input type="text" name="last_name" placeholder="Last Name" className="w-full p-2 border rounded bg-gray-700 text-white" onChange={handleChange} required />
+                    <input type="email" name="email" placeholder="Email" className="w-full p-2 border rounded bg-gray-700 text-white" onChange={handleChange} required />
+                    <input type="password" name="password" placeholder="Password" className="w-full p-2 border rounded bg-gray-700 text-white" onChange={handleChange} required />
                     <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Sign Up</button>
                 </form>
-                <p className="text-center mt-4 text-gray-600">
+                <p className="text-center mt-4 text-gray-400">
                     Already have an account? <a href="/login" className="text-blue-500">Login</a>
                 </p>
             </div>

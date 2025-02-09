@@ -58,10 +58,10 @@ const Tasks = ({ onEarnClick }) => {
     return (
         <div className="p-4">
             <h2 className="text-2xl font-bold mb-4">Available Tasks</h2>
-            <div className="bg-white p-4 rounded shadow-md">
+            <div className="bg-gray-800 p-4 rounded shadow-md">
                 <ul className="space-y-4">
                     {tasks.map((task, index) => (
-                        <li key={index} className="border p-4 rounded shadow flex justify-between items-center">
+                        <li key={index} className="border p-4 rounded shadow flex justify-between items-center bg-gray-700">
                             <div className="flex items-center">
                                 {task.logo && <img src={`http://127.0.0.1:8000${task.logo}`} alt="App Logo" className="w-12 h-12 object-cover mr-4" />}
                                 <div>
